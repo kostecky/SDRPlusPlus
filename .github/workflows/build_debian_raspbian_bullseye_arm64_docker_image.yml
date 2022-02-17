@@ -1,0 +1,23 @@
+name: Build Debian/Raspbian Bullseye arm64 Docker Image
+
+on: [workflow_dispatch]
+
+jobs:
+    build_debian_raspbian_bullseye_arm64:
+        runs-on: self-hosted
+
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Docker login
+          env:
+            DOCKER_USER: ${{secrets.DOCKER_USER}}
+            DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+          run: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+        - name: Build Docker Image
+          run: cd $GITHUB_WORKSPACE/docker_builds/debian_raspbian_bullseye_arm64 && docker build . --tag kkostecky/sdrpp-debian-raspbian-bullseye-arm64:latest
+        
+        - name: Push Docker Image
+          run: docker push ${{secrets.DOCKER_USER}}/sdrpp-debian-raspbian-bullseye-arm64

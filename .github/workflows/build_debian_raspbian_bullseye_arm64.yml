@@ -1,4 +1,4 @@
-name: Build Raspibian arm64 Binary
+name: Build Debian/Raspbian Bullseye arm64 Binary
 
 on: [workflow_dispatch]
 
@@ -7,7 +7,7 @@ env:
     BUILD_TYPE: Release
 
 jobs:
-    build_raspios_bullseye_arm64:
+    build_debian_raspbian_bullseye_arm64:
         runs-on: self-hosted
 
         steps:
@@ -31,5 +31,5 @@ jobs:
         - name: Save Deb Archive
           uses: actions/upload-artifact@v2
           with:
-              name: sdrpp_raspios_bullseye_arm64
+              name: sdrpp_debian_raspbian_bullseye_arm64
               path: ${{runner.workspace}}/sdrpp_debian_arm64.deb
