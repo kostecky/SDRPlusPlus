@@ -108,6 +108,8 @@ int sdrpp_main(int argc, char* argv[]) {
     defConfig["bandPlanPos"] = 0;
     defConfig["centerTuning"] = false;
     defConfig["colorMap"] = "Classic";
+    defConfig["fftHold"] = false;
+    defConfig["fftHoldSpeed"] = 60;
     defConfig["fastFFT"] = false;
     defConfig["fftHeight"] = 300;
     defConfig["fftRate"] = 20;
@@ -221,6 +223,12 @@ int sdrpp_main(int argc, char* argv[]) {
 
     defConfig["vfoColors"]["Radio"] = "#FFFFFF";
 
+#ifdef __ANDROID__
+    defConfig["lockMenuOrder"] = true;
+#else
+    defConfig["lockMenuOrder"] = false;
+#endif
+
 #if defined(_WIN32)
     defConfig["modulesDirectory"] = "./modules";
     defConfig["resourcesDirectory"] = "./res";
@@ -260,6 +268,8 @@ int sdrpp_main(int argc, char* argv[]) {
     core::configManager.conf["modules"][modCount++] = "network_sink.so";
     core::configManager.conf["modules"][modCount++] = "audio_sink.so";
 
+    core::configManager.conf["modules"][modCount++] = "m17_decoder.so";
+    core::configManager.conf["modules"][modCount++] = "meteor_demodulator.so";
     core::configManager.conf["modules"][modCount++] = "radio.so";
 
     core::configManager.conf["modules"][modCount++] = "frequency_manager.so";

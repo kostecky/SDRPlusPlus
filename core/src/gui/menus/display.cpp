@@ -21,6 +21,8 @@ namespace displaymenu {
     int fftRate = 20;
     int uiScaleId = 0;
     bool restartRequired = false;
+    bool fftHold = false;
+    int fftHoldSpeed = 60;
 
     OptionList<float, float> uiScales;
 
@@ -49,6 +51,10 @@ namespace displaymenu {
                               "1024\0";
 
     int fftSizeId = 0;
+
+    void updateFFTHoldSpeed() {
+        gui::waterfall.setFFTHoldSpeed(fftHoldSpeed / (fftRate * 10.0f));
+    }
 
     void init() {
         showWaterfall = core::configManager.conf["showWaterfall"];
@@ -91,6 +97,13 @@ namespace displaymenu {
         selectedWindow = std::clamp<int>((int)core::configManager.conf["fftWindow"], 0, _FFT_WINDOW_COUNT - 1);
         gui::mainWindow.setFFTWindow(selectedWindow);
 
+        gui::menu.locked = core::configManager.conf["lockMenuOrder"];
+
+        fftHold = core::configManager.conf["fftHold"];
+        fftHoldSpeed = core::configManager.conf["fftHoldSpeed"];
+        gui::waterfall.setFFTHold(fftHold);
+        updateFFTHoldSpeed();
+
         // Define and load UI scales
         uiScales.define(1.0f, "100%", 1.0f);
         uiScales.define(2.0f, "200%", 2.0f);
@@ -124,6 +137,28 @@ namespace displaymenu {
             core::configManager.release(true);
         }
 
+        if (ImGui::Checkbox("Lock Menu Order##_sdrpp", &gui::menu.locked)) {
+            core::configManager.acquire();
+            core::configManager.conf["lockMenuOrder"] = gui::menu.locked;
+            core::configManager.release(true);
+        }
+
+        if (ImGui::Checkbox("FFT Hold##_sdrpp", &fftHold)) {
+            gui::waterfall.setFFTHold(fftHold);
+            core::configManager.acquire();
+            core::configManager.conf["fftHold"] = fftHold;
+            core::configManager.release(true);
+        }
+
+        ImGui::LeftLabel("FFT Hold Speed");
+        ImGui::FillWidth();
+        if (ImGui::InputInt("##sdrpp_fft_hold_speed", &fftHoldSpeed)) {
+            updateFFTHoldSpeed();
+            core::configManager.acquire();
+            core::configManager.conf["fftHoldSpeed"] = fftHoldSpeed;
+            core::configManager.release(true);
+        }
+
         ImGui::LeftLabel("High-DPI Scaling");
         ImGui::FillWidth();
         if (ImGui::Combo("##sdrpp_ui_scale", &uiScaleId, uiScales.txt)) {
@@ -138,6 +173,7 @@ namespace displaymenu {
         if (ImGui::InputInt("##sdrpp_fft_rate", &fftRate, 1, 10)) {
             fftRate = std::max<int>(1, fftRate);
             sigpath::signalPath.setFFTRate(fftRate);
+            updateFFTHoldSpeed();
             core::configManager.acquire();
             core::configManager.conf["fftRate"] = fftRate;
             core::configManager.release(true);
