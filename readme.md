@@ -1,4 +1,4 @@
-#### ATTENTION: FORK NOTE ####
+# ATTENTION: There is a precompiled binary in this fork for M1 Macs
 There is a precompiled standalone copy of SDR++ in the root of this code repository. It was compiled on an m1 macbook and should work on your m1, if you want to run it.
 
 To use it, just copy/move the folder into `/Applications` and click on the SDR++ app that appears in your Applications folder.
